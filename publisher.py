@@ -4,32 +4,41 @@
 Publish some messages to queue
 """
 import paho.mqtt.publish as publish
+import json
+import random as rand
+import time
 
+# Open and read the JSON file
+with open('data.json', 'r') as file:
+    data = json.load(file)
 
-msgs = [{'topic': "kids/yolo", 'payload': "jump"},
-        {'topic': "adult/pics", 'payload': "some photo"},
-        {'topic': "adult/news", 'payload': "extra extra"},
-        {'topic': "adult/news", 'payload': "super extra"}]
+# print(data)
 
 host = "localhost"
-
+start_time = time.time()
+reset_interval = 5 * 60  # 5 minutos em segundos
+received_request = False
 
 if __name__ == '__main__':
-    # publish a single message
+
     while True:
-        import random as rand
-        import json
-        payload1 = rand.randint(1, 10)
-        payload2 = rand.randint(11, 20)
-        # encoded = json.dumps(, indent=2).encode('utf-8')
-        # print(type(encoded))
-        publish.single(topic="test", payload=json.dumps({'Vel. Média': payload1, 'Pot.': payload2}), hostname=host, port=3001)
+        elapsed_time = time.time() - start_time
+        y = {
+            'Wind Speed': rand.random(),
+            'Wind Power Density (Watts/m2)': rand.random(),
+            'Wind Power (Watts)': rand.random(),
+            'Air Density (kg/m^3)': rand.random(),
+            'Temperature (F)': rand.randint(32, 122),
+            'Pressure (mmHg)': rand.uniform(20.0, 100.0),
+        }
 
-        # publish.single(topic="fernando", payload=payload2, hostname=host, port=3001)
+        if elapsed_time >= reset_interval:
+            if not received_request:
+                raise Exception('Simulando 5 minutos sem response da API')
+            else:
+                received_request = False
+                elapsed_time = 0
 
-
-    # publish multiple messages
-    # publish.multiple(msgs, hostname=host)
-
-
-# vi: set fileencoding=utf-8 :
+        publish.single(topic="test", payload=json.dumps(y), hostname=host, port=3001)
+        received_request = True
+        time.sleep(1)
