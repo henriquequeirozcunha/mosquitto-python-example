@@ -8,12 +8,6 @@ import json
 import random as rand
 import time
 
-# Open and read the JSON file
-with open('data.json', 'r') as file:
-    data = json.load(file)
-
-# print(data)
-
 host = "localhost"
 start_time = time.time()
 reset_interval = 5 * 60  # 5 minutos em segundos
@@ -39,6 +33,6 @@ if __name__ == '__main__':
                 received_request = False
                 elapsed_time = 0
 
-        publish.single(topic="test", payload=json.dumps(y), hostname=host, port=3001)
+        publish.single(topic="test", payload=json.dumps(y), hostname=host, port=1883)
         received_request = True
         time.sleep(1)
